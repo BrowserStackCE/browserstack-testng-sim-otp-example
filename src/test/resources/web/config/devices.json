@@ -1,0 +1,19 @@
+{
+  "capabilities": {
+    "project": "BrowserStack",
+    "build": "Demo",
+    "browserstack.debug": "true"
+  },
+  "environments": {
+    "pixel5": {
+      "name": "Parallel Test - Pixel 5",
+      "device": "Google Pixel 5",
+      "realMobile": "true"
+    },
+    "iphone12": {
+      "name": "Parallel Test - iPhone 11",
+      "device": "iPhone 11",
+      "realMobile": "true"
+    }
+  }
+}

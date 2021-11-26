@@ -1,0 +1,30 @@
+{
+  "capabilities": {
+    "project": "BrowserStack",
+    "build": "Demo",
+    "browserstack.debug": "true",
+    "app": "DemoApp"
+  },
+  "environments": {
+    "pixel3": {
+      "name": "Wikipedia Search Function - Google Pixel 3",
+      "device": "Google Pixel 3",
+      "os_version": "9.0"
+    },
+    "oneplus6t": {
+      "name": "Wikipedia Search Function - OnePlus 6T",
+      "device": "OnePlus 6T",
+      "os_version": "9.0"
+    },
+    "pixel5": {
+      "name": "Wikipedia Search Function - Google Pixel 5",
+      "device": "Google Pixel 5",
+      "os_version": "11.0"
+    },
+    "galaxys10e": {
+      "name": "Wikipedia Search Function - Samsung Galaxy S10e",
+      "device": "Samsung Galaxy S10e",
+      "os_version": "9.0"
+    }
+  }
+}

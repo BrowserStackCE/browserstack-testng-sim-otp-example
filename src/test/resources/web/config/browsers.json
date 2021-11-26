@@ -1,0 +1,41 @@
+{
+  "capabilities": {
+    "project": "BrowserStack",
+    "build": "Demo",
+    "browserstack.debug": "true"
+  },
+  "environments": {
+    "chrome": {
+      "name": "Parallel Test - Chrome",
+      "os": "OS X",
+      "os_version": "Big Sur",
+      "browser": "Chrome",
+      "browser_version": "latest"
+    },
+    "firefox": {
+      "name": "Parallel Test - Firefox",
+      "os": "Windows",
+      "os_version": "10",
+      "browser": "Firefox",
+      "browser_version": "latest"
+    },
+    "edge": {
+      "name": "Parallel Test - Edge",
+      "os": "Windows",
+      "os_version": "10",
+      "browser": "Edge",
+      "browser_version": "latest"
+    },
+    "safari": {
+      "name": "Parallel Test - Safari",
+      "os": "OS X",
+      "os_version": "Big Sur",
+      "browser": "Safari",
+      "browser_version": "latest"
+    },
+    "custom": {
+      "browserstack.geoLocation": "FR",
+      "browserstack.customNetwork": "1000,1000,100,1"
+    }
+  }
+}
