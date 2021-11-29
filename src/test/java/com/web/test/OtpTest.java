@@ -39,8 +39,8 @@ public class OtpTest {
     private static final String ACCESS_KEY = System.getenv("BROWSERSTACK_ACCESS_KEY");
     private static final String URL = "http://hub-cloud.browserstack.com/wd/hub";
 
-    public static final String ACCOUNT_SID = "ACe60f03452c0202c1d1cd8c26d90bb1a9";
-	public static final String AUTH_TOKEN = "7f7989ce03132568b269484bee9e51e8";
+    public static final String ACCOUNT_SID = System.getenv("TWILIO_SID");
+	public static final String AUTH_TOKEN = System.getenv("TWILIO_TOKEN");
 
     @BeforeTest(alwaysRun = true)
     @Parameters({"config", "environment"})
