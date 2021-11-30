@@ -1,3 +1,4 @@
+/* This script automates the 2FA login into amazon buisiness website using twilio messaging api*/
 package com.web.test;
 
 import io.restassured.path.json.JsonPath;
@@ -39,9 +40,6 @@ public class OtpTest {
     private static final String ACCESS_KEY = System.getenv("BROWSERSTACK_ACCESS_KEY");
     private static final String URL = "http://hub-cloud.browserstack.com/wd/hub";
 
-    public static final String ACCOUNT_SID = System.getenv("TWILIO_SID");
-	public static final String AUTH_TOKEN = System.getenv("TWILIO_TOKEN");
-
     @BeforeTest(alwaysRun = true)
     @Parameters({"config", "environment"})
     public void setup(String configFile, String environment) throws MalformedURLException {
@@ -56,42 +54,50 @@ public class OtpTest {
     }
 
     @Test
-    @Parameters({"phone"})
-    public void testBStackDemoLogin( String phone ) {
-        System.out.print(phone);
+    @Parameters({"phone", "tsid", "ttkn"})
+    public void testBStackDemoLogin ( String phone, String tsid, String ttkn ) throws InterruptedException {
+        
         WebDriver driver = driverThread.get();
         WebDriverWait wait = new WebDriverWait(driver, 10);
-        driver.get("https://bstackdemo.com");
-        wait.until(elementToBeClickable(By.id("signin"))).click();
-        wait.until(elementToBeClickable(By.cssSelector("#username input"))).sendKeys("fav_user" + TAB);
-        driver.findElement(By.cssSelector("#password input")).sendKeys("testingisfun99" + TAB);
-        driver.findElement(By.id("login-btn")).click();
-        String username = wait.until(presenceOfElementLocated(By.className("username"))).getText();
-        Assert.assertEquals(username, "fav_user", "Incorrect username");
+        driver.get("https://www.amazon.in/ap/signin?openid.pape.max_auth_age=0&openid.return_to=https%3A%2F%2Fwww.amazon.in%2Fbusiness%2Fregister%2Fcheck%2Fstatus%3Fref_%3Dab_welcome_bw_ckab_dsk&openid.identity=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.assoc_handle=amzn_ab_reg_web_in&openid.mode=checkid_setup&marketPlaceId=A21TJRUUN4KGV&language=en_IN&openid.claimed_id=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&pageId=ab_welcome_login_in&openid.ns=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0&ref_=ab_welcome_bw_ap-sn_dsk&disableLoginPrepopulate=1&switch_account=signin");
 
-        Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
-		String smsBody = getMessage();
-		System.out.println(smsBody);
+        //enter phone number & password
+        wait.until(elementToBeClickable(By.xpath("//*[@id='ap_email']"))).sendKeys(phone);
+        wait.until(elementToBeClickable(By.xpath("//*[@id='ap_password']"))).sendKeys("<YOUR AMAZON ACC PASSWORD>");
+        //click on sign in
+        wait.until(elementToBeClickable(By.xpath("//*[@id='signInSubmit']"))).click();
+        
+        //wait for the sms to go across
+        TimeUnit.SECONDS.sleep(5);
+
+        //read the otp from twilio
+        Twilio.init(tsid, ttkn);
+		String smsBody = getMessage(phone, tsid);
 		String OTPNumber = smsBody.replaceAll("[^-?0-9]+", " ");
-		System.out.println(OTPNumber);
+        
+        //enter otp
+        wait.until(elementToBeClickable(By.xpath("//*[@id='auth-mfa-otpcode']"))).sendKeys(OTPNumber);
 
+        //click signin
+        wait.until(elementToBeClickable(By.xpath("//*[@id='auth-signin-button']"))).click();
+       
     }
-
-    public static String getMessage() {
-		return getMessages().filter(m -> m.getDirection().compareTo(Message.Direction.INBOUND) == 0)
-				.filter(m -> m.getTo().equals("+18023929308")).map(Message::getBody).findFirst()
+    //get the last message for the specific phone number
+    public static String getMessage(String phone, String tsid) {
+		return getMessages(tsid).filter(m -> m.getDirection().compareTo(Message.Direction.INBOUND) == 0)
+				.filter(m -> m.getTo().equals(phone)).map(Message::getBody).findFirst()
 				.orElseThrow(IllegalStateException::new);
 	}
-
-	private static Stream<Message> getMessages() {
-		ResourceSet<Message> messages = Message.reader(ACCOUNT_SID).read();
+    //get all messages
+	private static Stream<Message> getMessages(String tsid) {
+		ResourceSet<Message> messages = Message.reader(tsid).read();
 		return StreamSupport.stream(messages.spliterator(), false);
 	}
 
     @AfterTest(alwaysRun = true)
     public void teardown() {
         JavascriptExecutor js = (JavascriptExecutor) driverThread.get();
-        js.executeScript("browserstack_executor: {\"action\": \"setSessionStatus\", \"arguments\": {\"status\": \"passed\", \"reason\": \"BStackDemo login passed\"}}");
+        js.executeScript("browserstack_executor: {\"action\": \"setSessionStatus\", \"arguments\": {\"status\": \"passed\", \"reason\": \"login passed\"}}");
         driverThread.get().quit();
         driverThread.remove();
     }
